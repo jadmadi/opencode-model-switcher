@@ -1,0 +1,23 @@
+{
+  "name": "opencode-model-switcher",
+  "version": "0.1.0",
+  "description": "OpenCode V2 plugin: slash commands to switch model providers mid-session",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./model-switcher.ts"
+  },
+  "files": [
+    "model-switcher.ts"
+  ],
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "plugin",
+    "model"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jadmadi/opencode-model-switcher.git"
+  }
+}
