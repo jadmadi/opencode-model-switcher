@@ -12,9 +12,9 @@ Defaults:
 | `/zai`    | `zai-coding-plan/glm-5.3`                           |
 | `/oc-zen` | Cycles the six `opencode/*-free` Zen models         |
 
-Each command switches the current session's model and keeps the `build` agent.
-Append a task to run it on the newly selected model, for example
-`/ds-go fix the retry logic`. A bare command only switches.
+Each command switches the model and leaves the agent alone. Add `agent` to a
+command to switch that too. Append a task to run it on the new model, for
+example `/ds-go fix the retry logic`. A bare command only switches.
 
 ## Install
 
@@ -49,25 +49,45 @@ Create `~/.config/opencode/model-switcher.json`:
     "oc-quick": {
       "description": "Fast, cheap edits",
       "model": "opencode/gemini-3.8-flash"
+    },
+    "oc-review": {
+      "description": "Review on a frontier model",
+      "model": "opencode/claude-opus-4-8",
+      "agent": "plan"
     }
   }
 }
 ```
 
 - Each key is the command name, so `oc-thinking` becomes `/oc-thinking`.
-- `model` pins one model; `models` cycles through a list and remembers its
-  position per session.
+- `model` pins one model; `models` cycles a list, remembered per session.
+- `agent` is optional. Without it the command never changes the agent.
 - A ref is `provider/model` with an optional `#variant`, for example
   `opencode-go/deepseek-v4-flash#max`.
-- Entries merge over the defaults, so your commands are added and a key that
-  matches a default replaces it.
+- Your entries merge field by field over the defaults. You can change only the
+  description of a default, or override just its model.
 - Set `"disabled": true` on a default to hide it.
 - The file is read when the plugin loads. After editing it, run
   `touch ~/.config/opencode/plugins/model-switcher.ts` to reload.
 - Override the location with `MODEL_SWITCHER_CONFIG=/path/to/file.json`.
 
-`model-switcher.example.json` is a ready starting point. Model IDs are the
-same ones `opencode2 models` prints.
+`model-switcher.example.json` is a starting point. Model IDs are the same ones
+`opencode2 models` prints.
+
+## When something is wrong
+
+- An entry with the wrong type is ignored. The other entries still load.
+- A command whose model is not in the model catalog fails with an error and
+  does not switch. The same applies to a missing agent.
+
+## Tests
+
+```sh
+bun test
+```
+
+OpenCode embeds Bun, so the tests use Bun's runner and globals for parity with
+the plugin runtime.
 
 ## Notes
 
