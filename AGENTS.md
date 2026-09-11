@@ -10,12 +10,10 @@ dependencies, MIT licensed.
 
 ## Local development
 
-Install it into the global OpenCode plugins directory and let the watcher
-reload:
-
 ```sh
+bun test                                             # unit tests
 cp model-switcher.ts ~/.config/opencode/plugins/model-switcher.ts
-touch ~/.config/opencode/plugins/model-switcher.ts   # after edits
+touch ~/.config/opencode/plugins/model-switcher.ts   # reload after edits
 ```
 
 Verify registration:
@@ -30,8 +28,31 @@ Check the server log when something is off:
 grep model-switcher ~/.local/share/opencode/log/opencode.log | tail
 ```
 
-A line matching `failed to load plugin ... cause=` is the authoritative error;
-`msg="loading plugin"` without a following failure means it loaded.
+A line matching `failed to load plugin ... cause=` is the authoritative load
+error. Plugin `console` output does not reach that log (the service sends
+stdout to /dev/null and stderr to a socket), so never rely on console for
+user-facing feedback.
+
+## Tests
+
+`bun test` runs `model-switcher.test.ts`. Bun is a deliberate exception to the
+global no-bun rule in this repository: the plugin runs inside OpenCode, which
+embeds Bun, so the tests share the runtime and globals (`Bun.file`). Keep the
+pure helpers exported so they stay testable.
+
+## API notes
+
+- `ctx.catalog.model.list()` and `ctx.agent.list()` return
+  `{ location, data: [...] }`. Model entries have `providerID` and `id`;
+  agent entries have `id`.
+- `ctx.session.get({ sessionID })` returns the session, whose `model` is
+  `{ providerID, id, variant? }`.
+- `ctx.session.switchModel` and `switchAgent` accept unknown values without
+  error, so validate against the catalog before switching.
+- Throwing from a command's `execute` surfaces as `CommandExecutionError`
+  (HTTP 500) with the message, and does not start a model turn.
+- `ctx.session.synthetic({ sessionID, text })` adds a message and triggers a
+  model turn. Do not use it for notices.
 
 ## Hard constraints
 
@@ -47,36 +68,43 @@ A line matching `failed to load plugin ... cause=` is the authoritative error;
   restructure this into a package.
 - The user config file is read once during `setup`. A config edit needs a
   plugin reload (`touch`); never document it as live.
+- Never use `ctx.session.synthetic` for user feedback. Throw an `Error`.
 
 ## Customization contract
 
 `~/.config/opencode/model-switcher.json`, overridable with
-`MODEL_SWITCHER_CONFIG`, has this shape:
+`MODEL_SWITCHER_CONFIG`:
 
 ```json
 {
   "commands": {
     "name": { "description": "...", "model": "provider/model#variant" },
-    "other": { "description": "...", "models": ["provider/model"] }
+    "other": { "description": "...", "models": ["provider/model"], "agent": "plan" }
   }
 }
 ```
 
-- Keys are command names, merged over `DEFAULTS` in `model-switcher.ts`.
-- Use one of `model` or `models` per entry. `models` cycles per session,
-  tracked in `ctx.storage` under `cycle/<name>/<sessionID>`.
+- Keys are command names, merged field by field over `DEFAULTS`.
+- Use one of `model` or `models`. `models` cycles per session, tracked in
+  `ctx.storage` under `cycle/<name>/<sessionID>`. If the session already runs
+  a model from the list, cycling continues after it.
+- `agent` is optional and only switches the agent when present.
 - `disabled: true` hides a default.
 - A ref is `provider/model` with an optional `#variant`. The provider ends at
   the first slash; the model may contain slashes.
+- Wrong-typed fields and non-object entries are ignored; the other entries
+  still load. A command with no usable models is skipped.
 
 ## Layout
 
 - `DEFAULTS` - the four built-in commands.
-- `configPath` / `loadUserCommands` - config resolution and parsing. Invalid
-  JSON logs a warning and falls back to defaults.
-- `parseRef` - `provider/model#variant` to a `ModelRef`.
+- `configPath` / `loadUserCommands` - config resolution and parsing.
+- `normalizeConfig` / `refsFor` - per-entry validation.
+- `parseRef` / `parseRefs` - ref parsing.
+- `knownModels` / `knownAgents` / `missingFrom` - catalog checks.
 - `setup` - registers one command per entry via `ctx.command.transform`.
 - `nextInCycle` - per-session cycling state.
+- `model-switcher.test.ts` - tests for the pure helpers and setup/execute.
 
 ## Releasing
 

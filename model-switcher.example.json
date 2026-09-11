@@ -12,6 +12,11 @@
       "description": "Fast, cheap edits",
       "model": "opencode/gemini-3.8-flash"
     },
+    "oc-review": {
+      "description": "Review on a frontier model with the plan agent",
+      "model": "opencode/claude-opus-4-8",
+      "agent": "plan"
+    },
     "oc-zen": {
       "disabled": true
     }
