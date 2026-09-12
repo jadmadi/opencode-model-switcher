@@ -7,8 +7,8 @@ Defaults:
 
 | Command   | Switches to                                        |
 | --------- | -------------------------------------------------- |
-| `/ds-go`  | `opencode-go/deepseek-v4-flash`                     |
-| `/ds`     | `deepseek/deepseek-v4-flash`                        |
+| `/ds-go`  | `opencode-go/deepseek-v4.1-flash`                   |
+| `/ds`     | `deepseek/deepseek-flash` (DeepSeek-V4.1-Flash)     |
 | `/zai`    | `zai-coding-plan/glm-5.3`                           |
 | `/oc-zen` | Cycles the six `opencode/*-free` Zen models         |
 

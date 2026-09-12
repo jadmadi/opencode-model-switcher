@@ -190,18 +190,18 @@ describe("setup", () => {
 
 describe("execute", () => {
   test("switches the model and forwards the prompt", async () => {
-    const { added, calls } = await setup(undefined, ["opencode-go/deepseek-v4-flash"])
+    const { added, calls } = await setup(undefined, ["opencode-go/deepseek-v4.1-flash"])
     const command = added.find((definition) => definition.name === "ds-go")
     await command.execute({ sessionID: "ses_1", prompt: { text: "fix it" }, delivery: "steer" })
     expect(calls.switchModel).toEqual([
-      { sessionID: "ses_1", model: { providerID: "opencode-go", id: "deepseek-v4-flash" } },
+      { sessionID: "ses_1", model: { providerID: "opencode-go", id: "deepseek-v4.1-flash" } },
     ])
     expect(calls.switchAgent).toEqual([])
     expect(calls.prompt).toHaveLength(1)
   })
 
   test("does not send an empty prompt", async () => {
-    const { added, calls } = await setup(undefined, ["opencode-go/deepseek-v4-flash"])
+    const { added, calls } = await setup(undefined, ["opencode-go/deepseek-v4.1-flash"])
     const command = added.find((definition) => definition.name === "ds-go")
     await command.execute({ sessionID: "ses_1", prompt: { text: "  " }, delivery: "steer" })
     expect(calls.switchModel).toHaveLength(1)
