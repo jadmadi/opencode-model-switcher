@@ -53,12 +53,12 @@ interface CommandEditor {
 
 const DEFAULTS: Record<string, CommandConfig> = {
   "ds-go": {
-    description: "Switch to DeepSeek via OpenCode Go",
-    model: "opencode-go/deepseek-v4-flash",
+    description: "Switch to DeepSeek V4.1 via OpenCode Go",
+    model: "opencode-go/deepseek-v4.1-flash",
   },
   ds: {
-    description: "Switch to DeepSeek platform",
-    model: "deepseek/deepseek-v4-flash",
+    description: "Switch to DeepSeek V4.1 platform",
+    model: "deepseek/deepseek-flash",
   },
   zai: {
     description: "Switch to Z.AI GLM",
