@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/jadmadi/opencode-model-switcher/main/model-switcher.schema.json",
+  "title": "opencode-model-switcher configuration",
+  "description": "User config for the model-switcher OpenCode plugin. Read once at plugin load; reload with touch plugins/model-switcher.ts.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "providers": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Provider preference order for groups without an explicit provider. Default: opencode, opencode-go, deepseek, zai-coding-plan."
+        },
+        "long": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Context window at or above which the long filter matches. Default 400000."
+        },
+        "new": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "description": "How many newest models the new sort keeps. Default 20."
+        },
+        "list": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "description": "How many lines a list prints and stores for use N. Default 30."
+        }
+      }
+    },
+    "commands": {
+      "type": "object",
+      "description": "Extra commands, or overrides of the built-ins, keyed by command name. The key becomes /<name>.",
+      "additionalProperties": { "$ref": "#/$defs/command" }
+    },
+    "pairs": {
+      "type": "object",
+      "description": "Free-paid fallback pairs. Each key becomes a command that switches to the primary and arms the fallback.",
+      "additionalProperties": { "$ref": "#/$defs/pair" }
+    }
+  },
+  "$defs": {
+    "ref": {
+      "type": "string",
+      "pattern": "^[^/#]+/[^#]+(#.+)?$",
+      "description": "A model reference: provider/model with an optional #variant."
+    },
+    "filter": {
+      "type": "object",
+      "description": "Narrows a group. Every key is optional; at least one is required.",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "free": { "const": true, "description": "Every cost tier is zero." },
+        "cheap": { "const": true, "description": "Paid models, cheapest first." },
+        "think": { "const": true, "description": "Has a reasoning field or thinking/reasoning/effort variants." },
+        "vision": { "const": true, "description": "Accepts image input." },
+        "long": {
+          "oneOf": [
+            { "const": true },
+            { "type": "number", "exclusiveMinimum": 0 }
+          ],
+          "description": "Context window at or above the default threshold, or an explicit number."
+        },
+        "new": { "const": true, "description": "Sorts by release date instead of price." },
+        "all": { "const": true, "description": "Ignore the provider preference order." },
+        "provider": { "type": "string", "minLength": 1, "description": "Exact provider ID." },
+        "family": { "type": "string", "minLength": 1, "description": "Family prefix, for example muse or deepseek." }
+      }
+    },
+    "side": {
+      "oneOf": [
+        { "$ref": "#/$defs/ref" },
+        { "$ref": "#/$defs/filter" }
+      ],
+      "description": "A model reference, or a filter resolved to the cheapest match."
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": { "type": "string" },
+        "filter": { "$ref": "#/$defs/filter" },
+        "sort": { "enum": ["cheapest", "new"], "description": "cheapest is the default." },
+        "model": { "$ref": "#/$defs/ref" },
+        "models": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ref" },
+          "minItems": 1,
+          "description": "Pins a fixed list to cycle. model and models are alternatives to filter."
+        },
+        "agent": { "type": "string", "minLength": 1 },
+        "disabled": { "type": "boolean" }
+      }
+    },
+    "pair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primary", "fallback"],
+      "properties": {
+        "description": { "type": "string" },
+        "primary": { "$ref": "#/$defs/side" },
+        "fallback": { "$ref": "#/$defs/side" },
+        "retry": {
+          "type": "boolean",
+          "description": "Resend the last user prompt on the fallback when the failed turn produced no output. Default false."
+        },
+        "agent": { "type": "string", "minLength": 1 },
+        "disabled": { "type": "boolean" }
+      }
+    }
+  }
+}

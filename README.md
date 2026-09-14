@@ -1,20 +1,22 @@
 # opencode-model-switcher
 
-An OpenCode V2 plugin that adds slash commands for switching model providers
-mid-session. The command set is data-driven, so you can define your own.
+An OpenCode V2 plugin that adds slash commands for switching models mid-session.
+Commands are semantic: they name an intent, and the plugin resolves it against
+the live model catalog. Nothing is hard-coded, so the commands keep working as
+models come and go.
 
-Defaults:
+```
+/free           cycle models that cost nothing
+/think          cycle reasoning models
+/long           400k+ context windows
+/new            the newest models
+/muse           the Muse family
+/nvid           NVIDIA
+```
 
-| Command   | Switches to                                        |
-| --------- | -------------------------------------------------- |
-| `/ds-go`  | `opencode-go/deepseek-v4.1-flash`                   |
-| `/ds`     | `deepseek/deepseek-flash` (DeepSeek-V4.1-Flash)     |
-| `/zai`    | `zai-coding-plan/glm-5.3`                           |
-| `/oc-zen` | Cycles the six `opencode/*-free` Zen models         |
-
-Each command switches the model and leaves the agent alone. Add `agent` to a
-command to switch that too. Append a task to run it on the new model, for
-example `/ds-go fix the retry logic`. A bare command only switches.
+Built-in groups: `/free`, `/cheap`, `/think`, `/vision`, `/long`, `/new`,
+`/muse`, `/glm`, `/nvid`. A group command switches the model only. The agent
+stays unless the command names one.
 
 ## Install
 
@@ -29,7 +31,68 @@ curl -fsSL \
 
 For a single project, put it in `.opencode/plugins/` instead. OpenCode V2
 discovers single `.ts` files in those directories and hot-reloads on change.
-Tested against OpenCode `0.0.0-beta-19425`.
+Tested against OpenCode v2.0.3.
+
+## Use
+
+Each group command cycles its group, cheapest first. It also accepts:
+
+- `list` prints the group with numbers, then `/<group> use N` switches.
+- filters narrow the group, for example `/free nvidia` or `/ds think`.
+- `/model` shows the current model and commands.
+- `/model help` prints the grammar.
+- `/model <provider>/<model>[#variant]` switches to an exact model.
+
+Filters: `free`, `cheap` (paid), `think`, `vision`, `long`, `new`, `all`,
+`provider:<id>`, `family:<name>`, or a known provider or family name.
+`all` ignores your provider order for one command.
+
+Sorts: cheapest first by default. The `new` filter sorts by release date and
+keeps the newest 20.
+
+Every group only offers tool-capable, active models. The definitions:
+
+- free: every cost tier is zero.
+- think: a reasoning field, or thinking/reasoning/effort variants.
+- vision: image input.
+- long: context window at or above 400k.
+- new: the newest 20 by release date.
+
+Generic groups walk your provider order, by default `opencode`,
+`opencode-go`, `deepseek`, `zai-coding-plan`. Within a provider, cheapest
+first. If no preferred provider matches, the command shows all providers and
+says so.
+
+## Pairs
+
+A pair is a free primary with a paid fallback. When the session runs the
+primary and a turn fails with a provider error, the plugin switches to the
+fallback.
+
+```json
+"pairs": {
+  "zen": {
+    "primary": { "free": true, "provider": "opencode" },
+    "fallback": { "cheap": true, "provider": "opencode" }
+  },
+  "spark": {
+    "primary": "opencode/muse-spark-1.3-contributor-free",
+    "fallback": "opencode/muse-spark-1.3",
+    "retry": true
+  }
+}
+```
+
+- Each pair key becomes a command. `/zen` switches to the primary and arms the
+  fallback.
+- `primary` and `fallback` take a model ref or a filter. A filter resolves to
+  the cheapest match.
+- `retry: true` re-sends the last user prompt on the fallback, but only when
+  the failed turn produced no assistant output. Off by default.
+- User aborts, context overflows, and output-length errors never fall back.
+- One step only. A pair never chains into another pair on its own.
+
+`/model pairs` lists the pairs with both sides resolved.
 
 ## Customize
 
@@ -37,21 +100,14 @@ Create `~/.config/opencode/model-switcher.json`:
 
 ```json
 {
+  "$schema": "https://raw.githubusercontent.com/jadmadi/opencode-model-switcher/main/model-switcher.schema.json",
+  "defaults": { "providers": ["opencode", "deepseek"] },
   "commands": {
-    "oc-thinking": {
-      "description": "Cycle frontier models for complex tasks",
-      "models": [
-        "opencode/claude-opus-4-8",
-        "opencode/gpt-5.6-luna",
-        "opencode/gemini-3.1-pro"
-      ]
+    "ds": {
+      "description": "DeepSeek platform",
+      "filter": { "provider": "deepseek" }
     },
-    "oc-quick": {
-      "description": "Fast, cheap edits",
-      "model": "opencode/gemini-3.8-flash"
-    },
-    "oc-review": {
-      "description": "Review on a frontier model",
+    "review": {
       "model": "opencode/claude-opus-4-8",
       "agent": "plan"
     }
@@ -59,26 +115,31 @@ Create `~/.config/opencode/model-switcher.json`:
 }
 ```
 
-- Each key is the command name, so `oc-thinking` becomes `/oc-thinking`.
-- `model` pins one model; `models` cycles a list, remembered per session.
+- Each key is the command name, so `ds` becomes `/ds`.
+- A command takes a `filter` and `sort`, or pins `model` and `models`.
 - `agent` is optional. Without it the command never changes the agent.
-- A ref is `provider/model` with an optional `#variant`, for example
-  `opencode-go/deepseek-v4-flash#max`.
-- Your entries merge field by field over the defaults. You can change only the
-  description of a default, or override just its model.
-- Set `"disabled": true` on a default to hide it.
+- `disabled: true` hides a built-in or a pair command.
+- Your entries merge field by field over the defaults.
 - The file is read when the plugin loads. After editing it, run
   `touch ~/.config/opencode/plugins/model-switcher.ts` to reload.
-- Override the location with `MODEL_SWITCHER_CONFIG=/path/to/file.json`.
+- Override the path with `MODEL_SWITCHER_CONFIG=/path/to/file.json`.
 
-`model-switcher.example.json` is a starting point. Model IDs are the same ones
-`opencode2 models` prints.
+`model-switcher.example.json` is a starting point.
+`model-switcher.schema.json` powers editor autocomplete and validation. Point
+`$schema` at the file next to your config, or at the raw URL above.
+
+Model IDs are the same ones `opencode models` prints.
+
+Upgrading from 0.3: pinned `model` and `models` entries still work. Text after
+a command is now read as filters, not as a task prompt. Use `list` and
+`use N`, or send the task as your next message.
 
 ## When something is wrong
 
 - An entry with the wrong type is ignored. The other entries still load.
-- A command whose model is not in the model catalog fails with an error and
-  does not switch. The same applies to a missing agent.
+- A pinned model or an agent that is not in the catalog fails with an error
+  and does not switch.
+- An unknown filter fails and names the valid tokens.
 
 ## Tests
 
