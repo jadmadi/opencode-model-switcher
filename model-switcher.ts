@@ -25,6 +25,8 @@
 // The runtime does not resolve `@opencode/plugin`, so this file exports a
 // plain { id, setup } object and uses Bun globals for file access.
 
+const VERSION = "0.4.0"
+
 interface ModelRef {
   providerID: string
   id: string
@@ -179,7 +181,7 @@ const DEFAULTS: Record<string, CommandConfig> = {
 }
 
 const HELP_TEXT = [
-  "model-switcher",
+  `model-switcher ${VERSION}`,
   "",
   "Groups cycle on repeat, cheapest first. Every group command also takes:",
   "  list            print the group with numbers",
@@ -734,6 +736,7 @@ function formatStatus(runtime: Runtime, current: ModelRef | undefined, models: M
   }
   lines.push(`Config: ${runtime.configPath ?? "none"}`)
   lines.push(`Commands: ${runtime.commandNames.join(", ")}`)
+  lines.push(`model-switcher ${VERSION}`)
   lines.push("Run /model help for the grammar.")
   return lines.join("\n")
 }
@@ -1199,9 +1202,10 @@ const plugin = {
 }
 
 export {
-  DEFAULTS,
   DEFAULT_DEFAULTS,
+  DEFAULTS,
   HELP_TEXT,
+  VERSION,
   buildVocabulary,
   classifyError,
   describeModel,
