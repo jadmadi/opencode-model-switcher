@@ -18,6 +18,12 @@ Built-in groups: `/free`, `/cheap`, `/think`, `/vision`, `/long`, `/new`,
 `/muse`, `/glm`, `/nvid`. A group command switches the model only. The agent
 stays unless the command names one.
 
+## OpenCode
+
+This plugin runs on OpenCode. Install it with my referral link:
+
+https://opencode.ai/go?ref=N9H3ZEP22A
+
 ## Install
 
 Copy the plugin into your OpenCode plugins directory:
