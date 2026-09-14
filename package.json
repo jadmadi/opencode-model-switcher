@@ -1,6 +1,6 @@
 {
   "name": "opencode-model-switcher",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "OpenCode V2 plugin: semantic slash commands to switch models mid-session",
   "type": "module",
   "license": "MIT",
