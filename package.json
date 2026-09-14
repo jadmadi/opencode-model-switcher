@@ -1,7 +1,7 @@
 {
   "name": "opencode-model-switcher",
-  "version": "0.3.1",
-  "description": "OpenCode V2 plugin: slash commands to switch model providers mid-session",
+  "version": "0.4.0",
+  "description": "OpenCode V2 plugin: semantic slash commands to switch models mid-session",
   "type": "module",
   "license": "MIT",
   "scripts": {
@@ -11,7 +11,8 @@
     ".": "./model-switcher.ts"
   },
   "files": [
-    "model-switcher.ts"
+    "model-switcher.ts",
+    "model-switcher.schema.json"
   ],
   "keywords": [
     "opencode",

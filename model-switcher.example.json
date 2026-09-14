@@ -1,12 +1,16 @@
 {
+  "$schema": "./model-switcher.schema.json",
+  "defaults": {
+    "providers": ["opencode", "opencode-go", "deepseek", "zai-coding-plan"],
+    "long": 400000,
+    "new": 20,
+    "list": 30
+  },
   "commands": {
     "oc-thinking": {
-      "description": "Cycle frontier models for complex tasks",
-      "models": [
-        "opencode/claude-opus-4-8",
-        "opencode/gpt-5.6-luna",
-        "opencode/gemini-3.1-pro"
-      ]
+      "description": "Reasoning models on OpenCode, cheapest first",
+      "filter": { "provider": "opencode", "think": true },
+      "sort": "cheapest"
     },
     "oc-quick": {
       "description": "Fast, cheap edits",
@@ -18,7 +22,20 @@
       "agent": "plan"
     },
     "oc-zen": {
-      "disabled": true
+      "description": "Free OpenCode Zen models",
+      "filter": { "provider": "opencode", "free": true }
+    }
+  },
+  "pairs": {
+    "zen": {
+      "description": "Free OpenCode models with a paid OpenCode fallback",
+      "primary": { "free": true, "provider": "opencode" },
+      "fallback": { "cheap": true, "provider": "opencode" }
+    },
+    "spark": {
+      "primary": "opencode/muse-spark-1.3-contributor-free",
+      "fallback": "opencode/muse-spark-1.3",
+      "retry": true
     }
   }
 }
