@@ -109,6 +109,10 @@ Create `~/.config/opencode/model-switcher.json`:
       "description": "DeepSeek platform",
       "filter": { "provider": "deepseek" }
     },
+    "zai": {
+      "description": "Z.AI GLM via coding plan",
+      "filter": { "provider": "zai-coding-plan" }
+    },
     "review": {
       "model": "opencode/claude-opus-4-8",
       "agent": "plan"
@@ -135,6 +139,18 @@ Model IDs are the same ones `opencode models` prints.
 Upgrading from 0.3: pinned `model` and `models` entries still work. Text after
 a command is now read as filters, not as a task prompt. Use `list` and
 `use N`, or send the task as your next message.
+
+## Off-peak pricing
+
+DeepSeek and Z.AI price by Beijing time (UTC+8); Xiaomi mimo discounts its
+Pacific hours (UTC-7). DeepSeek Flash halves its rates off-peak, the
+GLM-5.3-Flash zero-quota window runs 23:00 to 09:00 SGT, and peak surcharges
+are waived on weekends.
+
+Converting those windows into your own timezone is awkward, and the campaigns
+move. [TokenHour](https://tokenhour.surge.sh/) maps the schedules to your local
+time, shows the live rate tier, and tracks the current deals. Check it before a
+long batch on `/ds` or `/zai`.
 
 ## When something is wrong
 
