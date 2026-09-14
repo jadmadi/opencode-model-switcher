@@ -5,6 +5,7 @@ import { join } from "node:path"
 import plugin, {
   DEFAULT_DEFAULTS,
   HELP_TEXT,
+  VERSION,
   buildVocabulary,
   classifyError,
   describeModel,
@@ -196,6 +197,13 @@ function runtimeFor(ctx: any, pairs: any[] = []) {
 const find = (added: any[], name: string) => added.find((definition) => definition.name === name)
 const names = (added: any[]) => added.map((definition) => definition.name)
 const refs = (models: any[]) => models.map((entry) => `${entry.providerID}/${entry.id}`)
+
+describe("version", () => {
+  test("VERSION matches package.json", async () => {
+    const pkg = (await Bun.file(new URL("./package.json", import.meta.url)).json()) as { version: string }
+    expect(VERSION).toBe(pkg.version)
+  })
+})
 
 describe("parseRef", () => {
   test("parses a provider and model", () => {
