@@ -25,7 +25,7 @@
 // The runtime does not resolve `@opencode/plugin`, so this file exports a
 // plain { id, setup } object and uses Bun globals for file access.
 
-const VERSION = "0.4.0"
+const VERSION = "0.4.1"
 
 interface ModelRef {
   providerID: string
