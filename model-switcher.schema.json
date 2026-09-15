@@ -88,7 +88,7 @@
       "properties": {
         "description": { "type": "string" },
         "filter": { "$ref": "#/$defs/filter" },
-        "sort": { "enum": ["cheapest", "new"], "description": "cheapest is the default." },
+        "sort": { "enum": ["cheapest", "new", "variants"], "description": "cheapest is the default. variants ranks by variant count, most first." },
         "model": { "$ref": "#/$defs/ref" },
         "models": {
           "type": "array",

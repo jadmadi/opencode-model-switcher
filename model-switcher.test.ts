@@ -96,6 +96,14 @@ function catalog(): any[] {
       family: "muse",
       cost: [{ input: 1.25, output: 5, cache: { read: 0.1, write: 0 } }],
       capabilities: { tools: true, input: ["text", "image"], output: ["text"] },
+      variants: [
+        { id: "minimal", settings: { reasoningEffort: "minimal" } },
+        { id: "low", settings: { reasoningEffort: "low" } },
+        { id: "medium", settings: { reasoningEffort: "medium" } },
+        { id: "high", settings: { reasoningEffort: "high" } },
+        { id: "xhigh", settings: { reasoningEffort: "xhigh" } },
+        { id: "max", settings: { reasoningEffort: "max" } },
+      ],
     }),
     model({ id: "no-tools", name: "No Tools", capabilities: { tools: false, input: ["text"], output: ["text"] } }),
     model({ id: "beta-model", name: "Beta", status: "beta" }),
@@ -277,7 +285,7 @@ describe("matchesFilter", () => {
 
   test("think, vision and long narrow by catalog metadata", () => {
     const thinking = catalog().filter((entry) => matchesFilter(record(entry), { think: true }, defaults))
-    expect(refs(thinking)).toEqual(["opencode/nemotron-free", "opencode/kimi-k3"])
+    expect(refs(thinking)).toEqual(["opencode/nemotron-free", "opencode/kimi-k3", "opencode/muse-spark"])
 
     const vision = catalog().filter((entry) => matchesFilter(record(entry), { vision: true }, defaults))
     expect(refs(vision)).toEqual(["opencode/muse-spark"])
@@ -317,6 +325,15 @@ describe("rankModels", () => {
   test("new first and capped by the window", () => {
     const result = rankModels(catalog().map(record), "new", { ...defaults, new: 2 })
     expect(refs(result)).toEqual(["opencode/mimo-free", "opencode/nemotron-free"])
+  })
+
+  test("variants first: six before one before none, price as tie-break", () => {
+    const result = rankModels(catalog().map(record), "variants", defaults)
+    const order = refs(result)
+    expect(order[0]).toBe("opencode/muse-spark")
+    expect(order[1]).toBe("opencode/kimi-k3")
+    expect(order.indexOf("opencode/kimi-k3")).toBeLessThan(order.indexOf("opencode/mimo-free"))
+    expect(order.indexOf("opencode/mimo-free")).toBeLessThan(order.indexOf("opencode/unknown-cost"))
   })
 })
 

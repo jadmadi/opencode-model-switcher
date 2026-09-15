@@ -25,7 +25,7 @@
 // The runtime does not resolve `@opencode/plugin`, so this file exports a
 // plain { id, setup } object and uses Bun globals for file access.
 
-const VERSION = "0.4.3"
+const VERSION = "0.5.0"
 
 interface ModelRef {
   providerID: string
@@ -45,7 +45,7 @@ interface FilterConfig {
   family?: string
 }
 
-type SortMode = "cheapest" | "new"
+type SortMode = "cheapest" | "new" | "variants"
 
 interface CommandConfig {
   description?: string
@@ -191,7 +191,8 @@ const HELP_TEXT = [
   "Built-in groups: /free /cheap /think /vision /long /new /muse /glm /nvid",
   "Filters: free, cheap, think, vision, long, new, all,",
   "         provider:<id>, family:<name>, or a known provider or family name",
-  "Sorts: cheapest (default), new (newest first, top 20)",
+  "Sorts: cheapest (default), variants (most variant settings first),",
+  "       new (newest first, top 20)",
   "",
   "  /model                  current model, pair, and commands",
   "  /model help             this text",
@@ -262,7 +263,7 @@ function normalizeCommand(entry: unknown): CommandConfig | undefined {
   }
   if (typeof entry.agent === "string") config.agent = entry.agent
   if (typeof entry.disabled === "boolean") config.disabled = entry.disabled
-  if (entry.sort === "cheapest" || entry.sort === "new") config.sort = entry.sort
+  if (entry.sort === "cheapest" || entry.sort === "new" || entry.sort === "variants") config.sort = entry.sort
   const filter = normalizeFilter(entry.filter)
   if (filter) config.filter = filter
   return config
@@ -511,6 +512,10 @@ function matchesFilter(model: ModelRecord, filter: FilterConfig, defaults: Requi
   return true
 }
 
+function variantCount(model: ModelRecord): number {
+  return model.variantSettings.length
+}
+
 function rankModels(models: ModelRecord[], sort: SortMode, defaults: Required<DefaultsConfig>): ModelRecord[] {
   const ranked = [...models]
   if (sort === "new") {
@@ -526,6 +531,18 @@ function rankModels(models: ModelRecord[], sort: SortMode, defaults: Required<De
     if (isFree(model.cost)) return 0
     const blended = blendedCost(model.cost)
     return blended === undefined ? Number.POSITIVE_INFINITY : blended
+  }
+  if (sort === "variants") {
+    ranked.sort(
+      (a, b) =>
+        variantCount(b) - variantCount(a) ||
+        price(a) - price(b) ||
+        b.released - a.released ||
+        b.context - a.context ||
+        a.providerID.localeCompare(b.providerID) ||
+        a.id.localeCompare(b.id),
+    )
+    return ranked
   }
   ranked.sort(
     (a, b) =>
@@ -1231,5 +1248,6 @@ export {
   rememberStep,
   resolveModels,
   sideFirst,
+  variantCount,
 }
 export default plugin

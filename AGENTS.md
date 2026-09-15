@@ -140,6 +140,9 @@ the worked example is `model-switcher.example.json`.
 - vision: `capabilities.input` includes `image`.
 - long: `limit.context` is at or above `defaults.long` (400k).
 - new: sorted by `time.released`, capped at `defaults.new` (20).
+- variants sort: models rank by variant count, most first, then by the
+  cheapest ranking below. A variant is one entry of `catalog.variants`, the
+  list ^T cycles; its `id` is the ref suffix.
 - Ranking: first-tier input plus output, free before paid, unknown last. Ties
   go to the newer release, then the larger context.
 - Provider preference partitions generic groups. An explicit `provider` filter
