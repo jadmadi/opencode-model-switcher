@@ -57,7 +57,9 @@ Filters: `free`, `cheap` (paid), `think`, `vision`, `long`, `new`, `all`,
 `all` ignores your provider order for one command.
 
 Sorts: cheapest first by default. The `new` filter sorts by release date and
-keeps the newest 20.
+keeps the newest 20. A command can set `sort: "variants"` to rank models by
+variant count, most first, then by price. Models carry variant settings (the
+ones ^T cycles); see the config section for an example.
 
 Every group only offers tool-capable, active models. The definitions:
 
@@ -130,6 +132,7 @@ Create `~/.config/opencode/model-switcher.json`:
 
 - Each key is the command name, so `ds` becomes `/ds`.
 - A command takes a `filter` and `sort`, or pins `model` and `models`.
+  `sort` is `cheapest` (default), `new`, or `variants`.
 - `agent` is optional. Without it the command never changes the agent.
 - `disabled: true` hides a built-in or a pair command.
 - Your entries merge field by field over the defaults.

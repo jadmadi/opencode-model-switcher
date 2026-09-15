@@ -24,6 +24,11 @@
     "oc-zen": {
       "description": "Free OpenCode Zen models",
       "filter": { "provider": "opencode", "free": true }
+    },
+    "oc-variant-rich": {
+      "description": "OpenCode models with the most variant settings",
+      "filter": { "provider": "opencode" },
+      "sort": "variants"
     }
   },
   "pairs": {
