@@ -158,7 +158,7 @@ function makeCtx(customCatalog: any[] = catalog()) {
   const storage = new Map<string, unknown>()
   let current: any
   const ctx: any = {
-    catalog: { model: { list: async () => ({ location: {}, data: customCatalog }) } },
+    model: { list: async () => ({ location: {}, data: customCatalog }) },
     agent: { list: async () => ({ location: {}, data: [{ id: "build" }, { id: "plan" }] }) },
     command: { transform: (callback: any) => callback({ add: (definition: any) => added.push(definition) }) },
     event: { subscribe: async function* () {} },

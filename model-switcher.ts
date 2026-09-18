@@ -25,7 +25,7 @@
 // The runtime does not resolve `@opencode/plugin`, so this file exports a
 // plain { id, setup } object and uses Bun globals for file access.
 
-const VERSION = "0.5.0"
+const VERSION = "0.5.1"
 
 interface ModelRef {
   providerID: string
@@ -383,7 +383,7 @@ function toRecord(raw: any): ModelRecord | undefined {
 
 async function loadModels(ctx: any): Promise<ModelRecord[]> {
   try {
-    const list = await ctx.catalog.model.list()
+    const list = await ctx.model.list()
     const data: any[] = Array.isArray(list) ? list : (list?.data ?? [])
     const records: ModelRecord[] = []
     for (const item of data) {
