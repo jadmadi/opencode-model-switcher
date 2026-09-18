@@ -51,7 +51,7 @@ handler with a fake context. When behavior changes, add a test.
 
 ## API notes
 
-- `ctx.catalog.model.list()` returns `{ location, data: [...] }`. Entries carry
+- `ctx.model.list()` returns `{ location, data: [...] }`. Entries carry
   `providerID`, `id`, `name`, `family`, `cost` (tiers with `input`, `output`,
   `cache`), `limit.context`, `capabilities.tools`, `capabilities.input`,
   `status`, `enabled`, `time.released`, `compatibility.reasoningField`, and
