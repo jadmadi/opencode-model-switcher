@@ -473,7 +473,7 @@ describe("setup", () => {
     })
     cleanup?.()
     const registered = names(added)
-    for (const name of ["free", "cheap", "think", "vision", "long", "new", "muse", "glm", "nvid", "ds", "zen", "model"]) {
+    for (const name of ["free", "cheap", "think", "vision", "long", "newest", "muse", "glm", "nvid", "ds", "zen", "model"]) {
       expect(registered).toContain(name)
     }
   })
