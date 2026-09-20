@@ -9,12 +9,12 @@ models come and go.
 /free           cycle models that cost nothing
 /think          cycle reasoning models
 /long           400k+ context windows
-/new            the newest models
+/newest         the newest models
 /muse           the Muse family
 /nvid           NVIDIA
 ```
 
-Built-in groups: `/free`, `/cheap`, `/think`, `/vision`, `/long`, `/new`,
+Built-in groups: `/free`, `/cheap`, `/think`, `/vision`, `/long`, `/newest`,
 `/muse`, `/glm`, `/nvid`. A group command switches the model only. The agent
 stays unless the command names one.
 

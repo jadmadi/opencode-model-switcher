@@ -1,7 +1,7 @@
 // OpenCode V2 model-switcher plugin.
 //
 // Registers slash commands that switch the session model. Groups are semantic:
-// a command names an intent (free, cheap, think, vision, long, new, a family,
+// a command names an intent (free, cheap, think, vision, long, newest, a family,
 // a provider) and the plugin resolves it against the live model catalog. No
 // model IDs are hard-coded except when a user pins them.
 //
@@ -25,7 +25,7 @@
 // The runtime does not resolve `@opencode/plugin`, so this file exports a
 // plain { id, setup } object and uses Bun globals for file access.
 
-const VERSION = "0.5.1"
+const VERSION = "0.5.2"
 
 interface ModelRef {
   providerID: string
@@ -162,7 +162,7 @@ const DEFAULTS: Record<string, CommandConfig> = {
     description: "Cycle models with a 400k+ context window",
     filter: { long: true },
   },
-  new: {
+  newest: {
     description: "Cycle the newest models",
     filter: { new: true },
   },
@@ -188,7 +188,7 @@ const HELP_TEXT = [
   "  use N           switch to number N from the last list",
   "  filters         narrow the group, for example /free nvidia",
   "",
-  "Built-in groups: /free /cheap /think /vision /long /new /muse /glm /nvid",
+  "Built-in groups: /free /cheap /think /vision /long /newest /muse /glm /nvid",
   "Filters: free, cheap, think, vision, long, new, all,",
   "         provider:<id>, family:<name>, or a known provider or family name",
   "Sorts: cheapest (default), variants (most variant settings first),",
