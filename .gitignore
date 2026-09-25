@@ -2,3 +2,4 @@ node_modules/
 rm/
 *.log
 .DS_Store
+aube-lock.yaml
