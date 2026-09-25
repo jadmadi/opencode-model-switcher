@@ -11,7 +11,7 @@ rules apply here too.
 A single-file OpenCode V2 plugin (`model-switcher.ts`) that registers slash
 commands for switching models mid-session. Commands are semantic: they name a
 filter, and the plugin resolves it against the live catalog. No build step, no
-dependencies, MIT licensed.
+dependencies, AGPL-3.0-only licensed.
 
 ## Local development
 
