@@ -82,10 +82,9 @@ handler with a fake context. When behavior changes, add a test.
 
 ## Hard constraints
 
-- Do not import `@opencode/plugin`. The runtime does not resolve it and npm
-  only publishes dev snapshots of that name. Export a plain `{ id, setup }`
-  object instead: the loader only requires a default export with an `id` and a
-  `setup` or `effect` function.
+- Import `{ Plugin } from "@opencode/plugin"` and export
+  `Plugin.define({ id, setup })`. The host provides the module at runtime; do
+  not add it as a package dependency. Tests stub it in `test-preload.ts`.
 - Keep the plugin dependency-free. Use Bun globals such as `Bun.file` for
   file access rather than adding packages.
 - Global plugins are discovered as single `.ts`/`.js` files in

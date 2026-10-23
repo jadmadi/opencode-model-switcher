@@ -22,10 +22,12 @@
 //   $XDG_CONFIG_HOME/opencode/model-switcher.json, or
 //   ~/.config/opencode/model-switcher.json
 //
-// The runtime does not resolve `@opencode/plugin`, so this file exports a
-// plain { id, setup } object and uses Bun globals for file access.
+// The host provides `@opencode/plugin` at runtime, so this file uses
+// `Plugin.define` and Bun globals for file access.
 
-const VERSION = "2026.9.0"
+import { Plugin } from "@opencode/plugin"
+
+const VERSION = "2026.10.0"
 
 interface ModelRef {
   providerID: string
@@ -1125,7 +1127,7 @@ function describeSide(side: PairSide, models: ModelRecord[], runtime: Runtime): 
 // ---------------------------------------------------------------------------
 // Plugin
 
-const plugin = {
+const plugin = Plugin.define({
   id: "model-switcher",
   async setup(ctx: any) {
     const user = await loadUserCommands(configPath())
@@ -1216,7 +1218,7 @@ const plugin = {
       return () => controller.abort()
     }
   },
-}
+})
 
 export {
   DEFAULT_DEFAULTS,
