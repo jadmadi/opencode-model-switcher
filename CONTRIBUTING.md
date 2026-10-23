@@ -16,7 +16,7 @@ For a big change, open an issue first so we can agree on the shape.
 
 You need:
 
-- OpenCode V2, tested on v2.0.3.
+- OpenCode V2, tested on v2.1.3.
 - Bun, which OpenCode embeds. The tests run under Bun on purpose.
 
 ## Set up
@@ -61,9 +61,9 @@ build a small fake catalog.
 
 These are not style preferences. The plugin stops working if you break them.
 
-- No dependencies and no imports. The runtime does not resolve
-  `@opencode/plugin`, and npm only publishes dev snapshots of it. Export a
-  plain `{ id, setup }` object.
+- Import `{ Plugin } from "@opencode/plugin"` and export
+  `Plugin.define({ id, setup })`. The host provides the module at runtime; do
+  not add it as a package dependency. Tests stub it in `test-preload.ts`.
 - Keep it one file. OpenCode discovers single `.ts` files in the plugins
   directory.
 - Use Bun globals such as `Bun.file` for file access.

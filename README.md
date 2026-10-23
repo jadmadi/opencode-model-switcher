@@ -38,7 +38,7 @@ curl -fsSL \
 
 For a single project, put it in `.opencode/plugins/` instead. OpenCode V2
 discovers single `.ts` files in those directories and hot-reloads on change.
-Tested against OpenCode v2.0.3.
+Tested against OpenCode v2.1.3.
 
 To pin a release, replace `main` in the URL with a tag such as `v0.4.0`.
 
@@ -180,10 +180,9 @@ the plugin runtime.
 
 ## Notes
 
-The plugin has no dependencies and exports a plain `{ id, setup }` object. The
-V2 runtime does not alias `@opencode/plugin`, so the
-`import { Plugin } from "@opencode/plugin"` shown in the docs does not resolve
-for a local plugin file.
+The plugin has no package dependencies. It imports `Plugin` from
+`@opencode/plugin`, which the host provides, and exports
+`Plugin.define({ id, setup })`. Tests stub the module with `test-preload.ts`.
 
 ## License
 
