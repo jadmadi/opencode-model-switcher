@@ -38,7 +38,7 @@ curl -fsSL \
 
 For a single project, put it in `.opencode/plugins/` instead. OpenCode V2
 discovers single `.ts` files in those directories and hot-reloads on change.
-Tested against OpenCode v2.1.3.
+Tested against OpenCode v2.1.4.
 
 To pin a release, replace `main` in the URL with a tag such as `v2026.10.0`.
 

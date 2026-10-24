@@ -16,7 +16,7 @@ For a big change, open an issue first so we can agree on the shape.
 
 You need:
 
-- OpenCode V2, tested on v2.1.3.
+- OpenCode V2, tested on v2.1.4.
 - Bun, which OpenCode embeds. The tests run under Bun on purpose.
 
 ## Set up

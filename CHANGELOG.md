@@ -2,6 +2,10 @@
 
 Notable changes to opencode-model-switcher. Versions use CalVer (YYYY.MM.MICRO).
 
+## 2026.10.1
+
+- Verified against OpenCode 2.1.4. No behavior change.
+
 ## 2026.10.0
 
 - Use `Plugin.define` from the host `@opencode/plugin` module.

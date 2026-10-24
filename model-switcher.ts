@@ -27,7 +27,7 @@
 
 import { Plugin } from "@opencode/plugin"
 
-const VERSION = "2026.10.0"
+const VERSION = "2026.10.1"
 
 interface ModelRef {
   providerID: string
